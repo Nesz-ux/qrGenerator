@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    justify-content: center;
+}
+
+.app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.qr-generator {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 20px;
+    width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.qr-generator .title {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.qr-form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.qr-form label {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.qr-form input[type="text"],
+.qr-form input[type="number"],
+.qr-form input[type="color"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.qr-form button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.qr-form button:hover {
+    background: #0056b3;
+}
+
+.qr-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.qr-preview p {
+    font-style: italic;
+    color: #666;
+}
+
+

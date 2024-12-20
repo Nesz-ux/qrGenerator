@@ -1,9 +1,9 @@
 import QrCodeGenerator from "./components/QrCodeGenerator";
-import "./styles/QrGeneratorStyle.css"
+import "./App.css"
 
 const App = () => {
   return(
-    <div className="app-container">
+    <div className="container">
       <QrCodeGenerator/>
     </div>
   );

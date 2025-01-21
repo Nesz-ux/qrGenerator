@@ -1,6 +1,6 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useRef } from "react";
 import { QRCode } from "react-qrcode-logo";
-import "../styles/QrGeneratorStyle.css"
+import "../styles/QrGeneratorStyle.css";
 
 function QrCodeGenerator() {
   const [ecLevel, setEcLevel] = useState<"H" | "L" | "M">("M");
@@ -15,7 +15,7 @@ function QrCodeGenerator() {
     value: "",
     ecLevel: "H",
     enableCORS: false,
-    size: 100,
+    size: 200,
     quietZone: 10,
     bgColor: "#ffffff",
     fgColor: "#000000",
@@ -31,6 +31,8 @@ function QrCodeGenerator() {
       inner: [0, 0, 0],
     },
   });
+
+  const qrRef = useRef<HTMLDivElement | null>(null);
 
   const handleEcLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEcLevel(e.target.value as "H" | "L" | "M");
@@ -67,31 +69,47 @@ function QrCodeGenerator() {
     }
   };
 
+  const handleDownload = () => {
+    if (qrRef.current) {
+      const canvas = qrRef.current.querySelector("canvas");
+      if (canvas) {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = "qrcode.png";
+        link.click();
+      } else {
+        console.error("No se encontró el elemento canvas.");
+      }
+    }
+  };
+
   return (
-      <div className="app-container">
-        <h1 className="title">QR Code Generator</h1>
-        <div className="form-preview-container">
-          <form className="qr-form">
-            <label>
-              Texto o URL:
-              <input
-                type="text"
-                name="value"
-                value={formData.value}
-                onChange={handleChange}
-                placeholder="Ejemplo Texto o http://EjemploURL"
-              />
-            </label>
+    <div className="container-qr">
+      <h1 className="title">Generador De Codigos QR</h1>
+      <div className="qrform-container">
+        <form className="qr-form">
+          <div className="input-text">
+            <label>Texto o URL:</label>
+            <input
+              type="text"
+              name="value"
+              value={formData.value}
+              onChange={handleChange}
+              placeholder="Ejemplo Texto o http://EjemploURL"
+            />
+          </div>
 
-            <label>
-              Nivel de Corrección:
-              <select value={ecLevel} onChange={handleEcLevelChange}>
-                <option value="H">Alto</option>
-                <option value="M">Medio</option>
-                <option value="L">Bajo</option>
-              </select>
-            </label>
+          <div className="input-option">
+            <label>Nivel de Corrección:</label>
+            <select value={ecLevel} onChange={handleEcLevelChange}>
+              <option value="H">Alto</option>
+              <option value="M">Medio</option>
+              <option value="L">Bajo</option>
+            </select>
+          </div>
 
+          <div className="input-text">
             <label>Tamaño: {formData.size}px</label>
             <input
               type="number"
@@ -100,7 +118,9 @@ function QrCodeGenerator() {
               value={formData.size}
               onChange={handleChange}
             />
+          </div>
 
+          <div className="input-range">
             <label>Margen: {formData.quietZone}px</label>
             <input
               type="range"
@@ -110,44 +130,68 @@ function QrCodeGenerator() {
               value={formData.quietZone}
               onChange={handleChange}
             />
+          </div>
 
-            <label>
-              Color de Fondo:
-              <input
-                type="color"
-                name="bgColor"
-                value={formData.bgColor}
-                onChange={handleChange}
-              />
-            </label>
+          <div className="input-color">
+            <label>Color de Fondo:</label>
+            <input
+              type="color"
+              name="bgColor"
+              value={formData.bgColor}
+              onChange={handleChange}
+            />
+            <output>{formData.bgColor}</output>
+          </div>
 
-            <label>
-              Color de QR:
-              <input
-                type="color"
-                name="fgColor"
-                value={formData.fgColor}
-                onChange={handleChange}
-              />
-            </label>
+          <div className="input-color">
+            <label>Color de QR:</label>
+            <input
+              type="color"
+              name="fgColor"
+              value={formData.fgColor}
+              onChange={handleChange}
+            />
+            <output>{formData.fgColor}</output>
+          </div>
 
-            <label>
-              Imagen (URL):
-              <input
-                type="text"
-                name="logoImage"
-                value={formData.logoImage}
-                onChange={handleChange}
-                placeholder="Pegar URL aquí"
-              />
-            </label>
+          <div className="input-option">
+            <label>Estilo de QR:</label>
+            <select value={qrStyle} onChange={handleQrStyleChange}>
+              <option value="squares">Cuadrado</option>
+              <option value="dots">Puntos</option>
+              <option value="fluid">Fluido</option>
+            </select>
+          </div>
 
-            <label>
-              O Selecciona un Archivo:
-              <input type="file" accept="image/*" onChange={handleFileUpload} />
-            </label>
+          <div className="input-text">
+            <label>Imagen (URL):</label>
+            <input
+              type="text"
+              name="logoImage"
+              value={formData.logoImage}
+              onChange={handleChange}
+              placeholder="Pegar URL aquí"
+            />
+          </div>
 
-            {/* Logo Attributes */}
+          <div className="input-file">
+            <label>O Selecciona un Archivo:</label>
+            <input type="file" accept="image/*" onChange={handleFileUpload} />
+          </div>
+
+          <div className="input-option">
+            <label>Estilo del Margen de la Imagen:</label>
+            <select
+              value={paddingImageStyle}
+              onChange={handlePaddingImageChange}
+            >
+              <option value="circle">Circular</option>
+              <option value="square">Cuadrado</option>
+            </select>
+          </div>
+
+          {/* Logo Attributes */}
+          <div className="input-range">
             <label>Ancho Imagen: {formData.logoWidth}px</label>
             <input
               type="range"
@@ -157,7 +201,9 @@ function QrCodeGenerator() {
               value={formData.logoWidth}
               onChange={handleChange}
             />
+          </div>
 
+          <div className="input-range">
             <label>Alto Imagen: {formData.logoHeight}px</label>
             <input
               type="range"
@@ -167,7 +213,9 @@ function QrCodeGenerator() {
               value={formData.logoHeight}
               onChange={handleChange}
             />
+          </div>
 
+          <div className="input-range">
             <label>Opacidad de Imagen: {formData.logoOpacity}</label>
             <input
               type="range"
@@ -178,16 +226,9 @@ function QrCodeGenerator() {
               value={formData.logoOpacity}
               onChange={handleChange}
             />
+          </div>
 
-            <label>
-              Estilo de QR:
-              <select value={qrStyle} onChange={handleQrStyleChange}>
-                <option value="squares">Cuadrado</option>
-                <option value="dots">Puntos</option>
-                <option value="fluid">Fluido</option>
-              </select>
-            </label>
-
+          <div className="input-range">
             <label>Margen de la Imagen:</label>
             <input
               type="range"
@@ -197,39 +238,33 @@ function QrCodeGenerator() {
               value={formData.logoPadding}
               onChange={handleChange}
             />
-
-            <label>
-              Estilo del Margen de la Imagen:
-              <select
-                value={paddingImageStyle}
-                onChange={handlePaddingImageChange}
-              >
-                <option value="circle">Circular</option>
-                <option value="square">Cuadrado</option>
-              </select>
-            </label>
-          </form>
-
-          {/* QR Code Preview */}
-          <div className="qr-preview">
-            <QRCode
-              value={formData.value}
-              ecLevel={ecLevel}
-              size={formData.size}
-              quietZone={formData.quietZone}
-              bgColor={formData.bgColor}
-              fgColor={formData.fgColor}
-              logoImage={formData.logoImage}
-              logoWidth={formData.logoWidth}
-              logoHeight={formData.logoHeight}
-              logoOpacity={formData.logoOpacity}
-              qrStyle={qrStyle}
-              logoPadding={formData.logoPadding}
-              logoPaddingStyle={paddingImageStyle}
-            />
           </div>
+
+        </form>
+
+        {/* QR Code Preview */}
+        <div className="qr-preview" ref={qrRef}>
+          <QRCode
+            value={formData.value}
+            ecLevel={ecLevel}
+            size={formData.size}
+            quietZone={formData.quietZone}
+            bgColor={formData.bgColor}
+            fgColor={formData.fgColor}
+            logoImage={formData.logoImage}
+            logoWidth={formData.logoWidth}
+            logoHeight={formData.logoHeight}
+            logoOpacity={formData.logoOpacity}
+            qrStyle={qrStyle}
+            logoPadding={formData.logoPadding}
+            logoPaddingStyle={paddingImageStyle}
+          />
+          <button className="download-btn" onClick={handleDownload}>
+            Descargar QR
+          </button>
         </div>
       </div>
+    </div>
   );
 }
 
